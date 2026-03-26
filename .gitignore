@@ -1,0 +1,32 @@
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+logs/
+
+# Node / React
+**/node_modules/
+**/build/
+**/dist/
+**/.cache/
+**/coverage/
+
+# .NET
+**/bin/
+**/obj/
+**/.vs/
+
+# Local tools / temp
+*.tmp
+*.temp
+*.swp
+*.swo
