@@ -18,8 +18,16 @@ export function MyBookingsPage() {
 
   return (
     <div className="card">
-      <h2>My bookings</h2>
-      {bookingsQuery.isLoading ? <p>Loading...</p> : null}
+      <div className="page-header">
+        <div>
+          <h2>My bookings</h2>
+          <p className="page-subtitle">
+            Track upcoming meetings and cancel when plans change.
+          </p>
+        </div>
+      </div>
+
+      {bookingsQuery.isLoading ? <p className="muted">Loading...</p> : null}
       <ul className="list">
         {(bookingsQuery.data ?? []).map((booking) => {
           const id = booking.id ?? booking.Id;
@@ -30,17 +38,39 @@ export function MyBookingsPage() {
           const isCancelled = booking.isCancelled ?? booking.IsCancelled;
 
           return (
-            <li key={id}>
-              <strong>{roomName}</strong> |{" "}
-              {dayjs(start).format("YYYY-MM-DD HH:mm")} -{" "}
-              {dayjs(end).format("YYYY-MM-DD HH:mm")} | {purpose}
+            <li key={id} className="list-item">
+              <div className="row-between">
+                <div>
+                  <strong>{roomName}</strong>
+                  <div className="muted">
+                    {dayjs(start).format("YYYY-MM-DD HH:mm")} -{" "}
+                    {dayjs(end).format("YYYY-MM-DD HH:mm")}
+                  </div>
+                  <div>{purpose}</div>
+                </div>
+
+                {!isCancelled ? (
+                  <button
+                    type="button"
+                    className="btn btn-danger"
+                    onClick={() => cancelMutation.mutate(id)}
+                  >
+                    Cancel
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn-status"
+                    disabled
+                  >
+                    Cancelled
+                  </button>
+                )}
+              </div>
+
               {!isCancelled ? (
-                <button type="button" onClick={() => cancelMutation.mutate(id)}>
-                  Cancel
-                </button>
-              ) : (
-                <span> (Cancelled)</span>
-              )}
+                <span className="badge badge-active">Active</span>
+              ) : null}
             </li>
           );
         })}
