@@ -1,6 +1,20 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { cancelBooking, getMyBookings } from "../services/bookingsService";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Table from "@mui/material/Table";
+import TableHead from "@mui/material/TableHead";
+import TableBody from "@mui/material/TableBody";
+import TableRow from "@mui/material/TableRow";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import Paper from "@mui/material/Paper";
+import Chip from "@mui/material/Chip";
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
 
 export function MyBookingsPage() {
   const queryClient = useQueryClient();
@@ -17,64 +31,99 @@ export function MyBookingsPage() {
   });
 
   return (
-    <div className="card">
-      <div className="page-header">
-        <div>
-          <h2>My bookings</h2>
-          <p className="page-subtitle">
-            Track upcoming meetings and cancel when plans change.
-          </p>
-        </div>
-      </div>
+    <Box>
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h4" fontWeight={700} gutterBottom>
+          My Bookings
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Track upcoming meetings and cancel when plans change.
+        </Typography>
+      </Box>
 
-      {bookingsQuery.isLoading ? <p className="muted">Loading...</p> : null}
-      <ul className="list">
-        {(bookingsQuery.data ?? []).map((booking) => {
-          const id = booking.id ?? booking.Id;
-          const roomName = booking.roomName ?? booking.RoomName;
-          const start = booking.startUtc ?? booking.StartUtc;
-          const end = booking.endUtc ?? booking.EndUtc;
-          const purpose = booking.purpose ?? booking.Purpose;
-          const isCancelled = booking.isCancelled ?? booking.IsCancelled;
+      <Card sx={{ borderRadius: 3, boxShadow: 1 }}>
+        <CardContent sx={{ p: 0 }}>
+          {bookingsQuery.isLoading ? (
+            <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            <TableContainer component={Paper} elevation={0}>
+              <Table>
+                <TableHead>
+                  <TableRow sx={{ bgcolor: "grey.50" }}>
+                    <TableCell sx={{ fontWeight: 700 }}>Room</TableCell>
+                    <TableCell sx={{ fontWeight: 700 }}>Start</TableCell>
+                    <TableCell sx={{ fontWeight: 700 }}>End</TableCell>
+                    <TableCell sx={{ fontWeight: 700 }}>Purpose</TableCell>
+                    <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
+                    <TableCell />
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {(bookingsQuery.data ?? []).map((booking) => {
+                    const id = booking.id ?? booking.Id;
+                    const roomName = booking.roomName ?? booking.RoomName;
+                    const start = booking.startUtc ?? booking.StartUtc;
+                    const end = booking.endUtc ?? booking.EndUtc;
+                    const purpose = booking.purpose ?? booking.Purpose;
+                    const isCancelled =
+                      booking.isCancelled ?? booking.IsCancelled;
 
-          return (
-            <li key={id} className="list-item">
-              <div className="row-between">
-                <div>
-                  <strong>{roomName}</strong>
-                  <div className="muted">
-                    {dayjs(start).format("YYYY-MM-DD HH:mm")} -{" "}
-                    {dayjs(end).format("YYYY-MM-DD HH:mm")}
-                  </div>
-                  <div>{purpose}</div>
-                </div>
-
-                {!isCancelled ? (
-                  <button
-                    type="button"
-                    className="btn btn-danger"
-                    onClick={() => cancelMutation.mutate(id)}
-                  >
-                    Cancel
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    className="btn btn-secondary btn-status"
-                    disabled
-                  >
-                    Cancelled
-                  </button>
-                )}
-              </div>
-
-              {!isCancelled ? (
-                <span className="badge badge-active">Active</span>
-              ) : null}
-            </li>
-          );
-        })}
-      </ul>
-    </div>
+                    return (
+                      <TableRow key={id} hover>
+                        <TableCell>
+                          <strong>{roomName}</strong>
+                        </TableCell>
+                        <TableCell>
+                          {dayjs(start).format("DD/MM/YYYY HH:mm")}
+                        </TableCell>
+                        <TableCell>
+                          {dayjs(end).format("DD/MM/YYYY HH:mm")}
+                        </TableCell>
+                        <TableCell>{purpose}</TableCell>
+                        <TableCell>
+                          <Chip
+                            label={isCancelled ? "Cancelled" : "Active"}
+                            color={isCancelled ? "default" : "success"}
+                            size="small"
+                            variant={isCancelled ? "outlined" : "filled"}
+                          />
+                        </TableCell>
+                        <TableCell align="right">
+                          {!isCancelled ? (
+                            <Button
+                              variant="outlined"
+                              color="error"
+                              size="small"
+                              onClick={() => cancelMutation.mutate(id)}
+                              disabled={cancelMutation.isPending}
+                            >
+                              Cancel
+                            </Button>
+                          ) : null}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                  {(bookingsQuery.data ?? []).length === 0 &&
+                  !bookingsQuery.isLoading ? (
+                    <TableRow>
+                      <TableCell
+                        colSpan={6}
+                        align="center"
+                        sx={{ py: 4, color: "text.secondary" }}
+                      >
+                        No bookings found.
+                      </TableCell>
+                    </TableRow>
+                  ) : null}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </CardContent>
+      </Card>
+    </Box>
   );
 }

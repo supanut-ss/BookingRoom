@@ -1,6 +1,20 @@
 import { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createBooking, getAvailability } from "../services/bookingsService";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Grid from "@mui/material/Grid";
+import TextField from "@mui/material/TextField";
+import MenuItem from "@mui/material/MenuItem";
+import Button from "@mui/material/Button";
+import Alert from "@mui/material/Alert";
+import Chip from "@mui/material/Chip";
+import CircularProgress from "@mui/material/CircularProgress";
+import Radio from "@mui/material/Radio";
+import PeopleIcon from "@mui/icons-material/People";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
 
 const HOUR_OPTIONS = Array.from({ length: 24 }, (_, hour) => {
   const value = `${String(hour).padStart(2, "0")}:00`;
@@ -177,187 +191,237 @@ export function RoomsPage() {
   };
 
   return (
-    <div className="card">
-      <div className="page-header">
-        <div>
-          <h2>Find available rooms</h2>
-          <p className="page-subtitle">
-            Select a time window, compare rooms, then book in one click.
-          </p>
-        </div>
-      </div>
+    <Box>
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h4" fontWeight={700} gutterBottom>
+          Find available rooms
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Select a time window, compare rooms, then book in one click.
+        </Typography>
+      </Box>
 
-      <form className="form-grid" onSubmit={onSearch}>
-        <div className="form-row">
-          <div className="field-group col-6">
-            <label htmlFor="startDate">Date</label>
-            <input
-              id="startDate"
-              type="date"
-              value={form.startDate}
-              onChange={(event) =>
-                setForm((prev) => ({ ...prev, startDate: event.target.value }))
-              }
-              required
-            />
-          </div>
+      <Card sx={{ borderRadius: 3, boxShadow: 1, mb: 3 }}>
+        <CardContent>
+          <Box component="form" onSubmit={onSearch}>
+            <Grid container spacing={2} alignItems="flex-end">
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Date"
+                  type="date"
+                  value={form.startDate}
+                  onChange={(e) =>
+                    setForm((p) => ({ ...p, startDate: e.target.value }))
+                  }
+                  required
+                  fullWidth
+                  size="small"
+                  InputLabelProps={{ shrink: true }}
+                />
+              </Grid>
+              <Grid item xs={6} sm={3}>
+                <TextField
+                  label="Start time"
+                  select
+                  value={form.startHour}
+                  onChange={(e) =>
+                    setForm((p) => ({ ...p, startHour: e.target.value }))
+                  }
+                  required
+                  fullWidth
+                  size="small"
+                >
+                  <MenuItem value="">Select hour</MenuItem>
+                  {START_HOUR_OPTIONS.map((opt) => (
+                    <MenuItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+              <Grid item xs={6} sm={3}>
+                <TextField
+                  label="End time"
+                  select
+                  value={form.endHour}
+                  onChange={(e) =>
+                    setForm((p) => ({ ...p, endHour: e.target.value }))
+                  }
+                  required
+                  fullWidth
+                  size="small"
+                >
+                  <MenuItem value="">Select hour</MenuItem>
+                  {HOUR_OPTIONS.map((opt) => (
+                    <MenuItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <TextField
+                  label="Minimum capacity"
+                  type="number"
+                  inputProps={{ min: 1 }}
+                  placeholder="e.g. 6"
+                  value={form.minCapacity}
+                  onChange={(e) =>
+                    setForm((p) => ({ ...p, minCapacity: e.target.value }))
+                  }
+                  fullWidth
+                  size="small"
+                />
+              </Grid>
+              <Grid item xs={12} sm={5}>
+                <TextField
+                  label="Purpose"
+                  placeholder="Sprint planning"
+                  value={form.purpose}
+                  onChange={(e) =>
+                    setForm((p) => ({ ...p, purpose: e.target.value }))
+                  }
+                  fullWidth
+                  size="small"
+                />
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  fullWidth
+                  sx={{ py: 1.1 }}
+                >
+                  Search
+                </Button>
+              </Grid>
+            </Grid>
 
-          <div className="field-group col-3">
-            <label htmlFor="startHour">Start time</label>
-            <select
-              id="startHour"
-              value={form.startHour}
-              onChange={(event) =>
-                setForm((prev) => ({ ...prev, startHour: event.target.value }))
-              }
-              required
-            >
-              <option value="">Select hour</option>
-              {START_HOUR_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="field-group col-3">
-            <label htmlFor="endHour">End time</label>
-            <select
-              id="endHour"
-              value={form.endHour}
-              onChange={(event) =>
-                setForm((prev) => ({ ...prev, endHour: event.target.value }))
-              }
-              required
-            >
-              <option value="">Select hour</option>
-              {HOUR_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <p className="hint">
-          Format used: dd/MM/yyyy HH:mm | Start:{" "}
-          {formatDateTimeDisplay(
-            parseDateAndHour(form.startDate, form.startHour),
-          )}{" "}
-          | End:{" "}
-          {formatDateTimeDisplay(
-            parseDateAndHour(form.startDate, form.endHour),
-          )}
-        </p>
-
-        <div className="form-row">
-          <div className="field-group">
-            <label htmlFor="minCapacity">Minimum capacity</label>
-            <input
-              id="minCapacity"
-              type="number"
-              min="1"
-              placeholder="e.g. 6"
-              value={form.minCapacity}
-              onChange={(event) =>
-                setForm((prev) => ({
-                  ...prev,
-                  minCapacity: event.target.value,
-                }))
-              }
-            />
-          </div>
-
-          <div className="field-group">
-            <label htmlFor="purpose">Purpose</label>
-            <input
-              id="purpose"
-              type="text"
-              placeholder="Sprint planning"
-              value={form.purpose}
-              onChange={(event) =>
-                setForm((prev) => ({ ...prev, purpose: event.target.value }))
-              }
-            />
-          </div>
-        </div>
-
-        <button type="submit" className="btn btn-primary">
-          Search
-        </button>
-      </form>
+            {form.startDate && form.startHour && form.endHour ? (
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ mt: 1, display: "block" }}
+              >
+                {formatDateTimeDisplay(
+                  parseDateAndHour(form.startDate, form.startHour),
+                )}
+                {" → "}
+                {formatDateTimeDisplay(
+                  parseDateAndHour(form.startDate, form.endHour),
+                )}
+              </Typography>
+            ) : null}
+          </Box>
+        </CardContent>
+      </Card>
 
       {availabilityQuery.isLoading ? (
-        <p className="muted">Loading rooms...</p>
+        <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
+          <CircularProgress />
+        </Box>
       ) : null}
+
       {availabilityQuery.data?.length ? (
-        <ul className="list room-grid">
+        <Grid container spacing={2} sx={{ mb: 3 }}>
           {availabilityQuery.data.map((room) => {
             const roomId = room.id ?? room.Id;
             const isSelected = String(selectedRoomId) === String(roomId);
 
             return (
-              <li
-                key={roomId}
-                className={`list-item room-box ${isSelected ? "selected" : ""}`}
-              >
-                <label className="room-box-label">
-                  <div>
-                    <strong className="room-title">
-                      {room.name ?? room.Name}
-                    </strong>
-                    <div className="muted room-location">
-                      {room.location ?? room.Location}
-                    </div>
-                  </div>
-
-                  <div className="room-meta">
-                    <span>Capacity: {room.capacity ?? room.Capacity}</span>
-                    <span className="badge badge-active">Available</span>
-                  </div>
-
-                  <div className="room-select">
-                    <input
-                      type="radio"
-                      name="room"
-                      value={roomId}
-                      checked={isSelected}
-                      onChange={(event) =>
-                        setSelectedRoomId(event.target.value)
-                      }
-                    />
-                    <span>{isSelected ? "Selected" : "Select room"}</span>
-                  </div>
-                </label>
-              </li>
+              <Grid item xs={12} sm={6} md={3} key={roomId}>
+                <Card
+                  onClick={() => setSelectedRoomId(String(roomId))}
+                  sx={{
+                    borderRadius: 3,
+                    boxShadow: isSelected ? 4 : 1,
+                    border: isSelected ? "2px solid" : "2px solid transparent",
+                    borderColor: isSelected ? "primary.main" : "transparent",
+                    cursor: "pointer",
+                    transition: "all 0.2s",
+                    "&:hover": { boxShadow: 3 },
+                  }}
+                >
+                  <CardContent>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "flex-start",
+                        mb: 1,
+                      }}
+                    >
+                      <Typography variant="subtitle1" fontWeight={700}>
+                        {room.name ?? room.Name}
+                      </Typography>
+                      <Radio
+                        checked={isSelected}
+                        size="small"
+                        sx={{ p: 0 }}
+                        onChange={() => setSelectedRoomId(String(roomId))}
+                      />
+                    </Box>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 0.5,
+                        color: "text.secondary",
+                        mb: 1,
+                      }}
+                    >
+                      <LocationOnIcon sx={{ fontSize: 16 }} />
+                      <Typography variant="body2">
+                        {room.location ?? room.Location}
+                      </Typography>
+                    </Box>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 0.5,
+                        color: "text.secondary",
+                        mb: 1.5,
+                      }}
+                    >
+                      <PeopleIcon sx={{ fontSize: 16 }} />
+                      <Typography variant="body2">
+                        Capacity: {room.capacity ?? room.Capacity}
+                      </Typography>
+                    </Box>
+                    <Chip label="Available" color="success" size="small" />
+                  </CardContent>
+                </Card>
+              </Grid>
             );
           })}
-        </ul>
+        </Grid>
       ) : enabled && !availabilityQuery.isLoading ? (
-        <p className="muted">No rooms found for the selected criteria.</p>
+        <Typography color="text.secondary" sx={{ py: 2 }}>
+          No rooms found for the selected criteria.
+        </Typography>
       ) : null}
 
-      <div className="section-actions">
-        <button
-          type="button"
-          className="btn btn-primary"
-          onClick={onBook}
-          disabled={bookingMutation.isPending}
-        >
-          Book selected room
-        </button>
-      </div>
       {message ? (
-        <p
-          className={
-            message.includes("success") ? "status success" : "status error"
-          }
+        <Alert
+          severity={message.includes("success") ? "success" : "error"}
+          sx={{ mb: 2 }}
         >
           {message}
-        </p>
+        </Alert>
       ) : null}
-    </div>
+
+      <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+        <Button
+          variant="contained"
+          size="large"
+          onClick={onBook}
+          disabled={bookingMutation.isPending || !selectedRoomId}
+          sx={{ px: 4 }}
+        >
+          Book selected room
+        </Button>
+      </Box>
+    </Box>
   );
 }
