@@ -63,7 +63,7 @@ export function DashboardPage() {
           { label: "Primary Action", value: "Book a Room" },
           { label: "Workspace", value: "Meeting Hub" },
         ].map((stat) => (
-          <Grid item xs={12} sm={4} key={stat.label}>
+          <Grid size={{ xs: 12, sm: 4 }} key={stat.label}>
             <Card sx={{ borderRadius: 3, boxShadow: 1 }}>
               <CardContent>
                 <Typography
@@ -88,7 +88,7 @@ export function DashboardPage() {
       </Typography>
       <Grid container spacing={2}>
         {quickLinks.map((link) => (
-          <Grid item xs={12} sm={6} md={4} key={link.to}>
+          <Grid size={{ xs: 12, sm: 6, md: 4 }} key={link.to}>
             <Card sx={{ borderRadius: 3, boxShadow: 1, height: "100%" }}>
               <CardActionArea
                 component={Link}

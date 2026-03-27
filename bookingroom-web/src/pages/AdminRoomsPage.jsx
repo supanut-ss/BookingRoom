@@ -84,7 +84,7 @@ export function AdminRoomsPage() {
             }}
           >
             <Grid container spacing={2} alignItems="flex-end">
-              <Grid item xs={12} sm={4}>
+              <Grid size={{ xs: 12, sm: 4 }}>
                 <TextField
                   label="Name"
                   placeholder="Ocean"
@@ -97,7 +97,7 @@ export function AdminRoomsPage() {
                   size="small"
                 />
               </Grid>
-              <Grid item xs={12} sm={4}>
+              <Grid size={{ xs: 12, sm: 4 }}>
                 <TextField
                   label="Location"
                   placeholder="Floor 2"
@@ -110,7 +110,7 @@ export function AdminRoomsPage() {
                   size="small"
                 />
               </Grid>
-              <Grid item xs={12} sm={2}>
+              <Grid size={{ xs: 12, sm: 2 }}>
                 <TextField
                   label="Capacity"
                   type="number"
@@ -124,7 +124,7 @@ export function AdminRoomsPage() {
                   size="small"
                 />
               </Grid>
-              <Grid item xs={12} sm={2}>
+              <Grid size={{ xs: 12, sm: 2 }}>
                 <Button
                   type="submit"
                   variant="contained"

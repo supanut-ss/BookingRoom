@@ -205,7 +205,7 @@ export function RoomsPage() {
         <CardContent>
           <Box component="form" onSubmit={onSearch}>
             <Grid container spacing={2} alignItems="flex-end">
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <TextField
                   label="Date"
                   type="date"
@@ -219,7 +219,7 @@ export function RoomsPage() {
                   InputLabelProps={{ shrink: true }}
                 />
               </Grid>
-              <Grid item xs={6} sm={3}>
+              <Grid size={{ xs: 6, sm: 3 }}>
                 <TextField
                   label="Start time"
                   select
@@ -239,7 +239,7 @@ export function RoomsPage() {
                   ))}
                 </TextField>
               </Grid>
-              <Grid item xs={6} sm={3}>
+              <Grid size={{ xs: 6, sm: 3 }}>
                 <TextField
                   label="End time"
                   select
@@ -259,7 +259,7 @@ export function RoomsPage() {
                   ))}
                 </TextField>
               </Grid>
-              <Grid item xs={12} sm={4}>
+              <Grid size={{ xs: 12, sm: 4 }}>
                 <TextField
                   label="Minimum capacity"
                   type="number"
@@ -273,7 +273,7 @@ export function RoomsPage() {
                   size="small"
                 />
               </Grid>
-              <Grid item xs={12} sm={5}>
+              <Grid size={{ xs: 12, sm: 5 }}>
                 <TextField
                   label="Purpose"
                   placeholder="Sprint planning"
@@ -285,7 +285,7 @@ export function RoomsPage() {
                   size="small"
                 />
               </Grid>
-              <Grid item xs={12} sm={3}>
+              <Grid size={{ xs: 12, sm: 3 }}>
                 <Button
                   type="submit"
                   variant="contained"
@@ -329,7 +329,7 @@ export function RoomsPage() {
             const isSelected = String(selectedRoomId) === String(roomId);
 
             return (
-              <Grid item xs={12} sm={6} md={3} key={roomId}>
+              <Grid size={{ xs: 12, sm: 6, md: 3 }} key={roomId}>
                 <Card
                   onClick={() => setSelectedRoomId(String(roomId))}
                   sx={{
